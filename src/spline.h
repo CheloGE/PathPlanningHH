@@ -33,10 +33,7 @@
 #include <algorithm>
 
 
-// unnamed namespace only because the implementation is in this
-// header file and we don't want to export symbols to the obj files
-namespace
-{
+
 
 namespace tk
 {
@@ -119,7 +116,9 @@ public:
 // implementation part, which could be separated into a cpp file
 // ---------------------------------------------------------------------
 
-
+#ifndef TK_SPLINE_IMPL
+}// namespace tk
+#else
 // band_matrix implementation
 // -------------------------
 
@@ -397,8 +396,6 @@ double spline::operator() (double x) const
 
 
 } // namespace tk
-
-
-} // namespace
+#endif /* TK_SPLINE_IMPL */
 
 #endif /* TK_SPLINE_H */

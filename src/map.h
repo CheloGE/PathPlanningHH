@@ -10,9 +10,7 @@
 
 #include "spline.h"
 
-//using namespace std;
-//using namespace tk; // spline
-namespace{
+
 class Map {
 
   protected:
@@ -32,5 +30,5 @@ class Map {
     std::vector<double> getXY(double s, double d);
 
 };
-}
+
 #endif // ROAD_H

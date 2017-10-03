@@ -1,3 +1,4 @@
+#define TK_SPLINE_IMPL
 #include "map.h"
 
 using namespace std;
