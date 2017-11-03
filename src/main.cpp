@@ -131,7 +131,7 @@ h.onMessage([
 				LANE vehicle_lane = vehicle.lane();
 
 				if (vehicle_lane == LANE::LEFT) {
-				left_lane.push_back(vehicle);
+				left_lane.push_back(vehicle);//pushing all vehicles data to the left lane vector of vehicles 
 				} else if (vehicle_lane == LANE::CENTER) {
 				center_lane.push_back(vehicle);
 				} else {
@@ -145,11 +145,11 @@ h.onMessage([
 			/*****************
 			******CORE*****
 			*****************/
-
+			
 			// Previous path
 			int n = previous_path_x.size();
 			for(int i = 0; i < n; i++) {
-				next_x_vals.push_back(previous_path_x[i]);
+				next_x_vals.push_back(previous_path_x[i]);//next_x_vals is empty on each iteration
 				next_y_vals.push_back(previous_path_y[i]);
 			}
 
@@ -157,8 +157,9 @@ h.onMessage([
 			******DRIVE*******
 			*****************/
 			vector<vector<double>> trajectory = {next_x_vals, next_y_vals};
-			planner.create_trajectory(map, road, car, trajectory);
-
+			planner.create_trajectory(map, road, car, trajectory); //what does create_trajectory for \
+																															the 2nd iteration do?
+								
 			// Update next point
 			msgJson["next_x"] = trajectory[0];
 			msgJson["next_y"] = trajectory[1];

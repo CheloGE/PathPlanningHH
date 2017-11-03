@@ -26,7 +26,7 @@ class Map {
     Map(){};
     Map(std::string map_file_);
     ~Map() {};
-
+    //gets the cartesian coordinates given frenet coordinates
     std::vector<double> getXY(double s, double d);
 
 };

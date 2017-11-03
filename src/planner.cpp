@@ -1,8 +1,8 @@
 #include "planner.h"
 
 using namespace std;
-
-string slane(LANE lane){
+//returns the lane as String for printing
+string slane(LANE lane){ 
   if (lane == LANE::LEFT){
     return "LEFT";
   } else if(lane == LANE::CENTER){
@@ -65,7 +65,7 @@ double get_lane_d(double D){
   }
   return d;
 }
-
+/*planner starts here*/
 Planner::Planner(){
   this->state = STATE::START;
 }
@@ -120,7 +120,7 @@ void Planner::estimate_new_points(Map& map, vector<vector<double>>& trajectory){
   vector <double> XY;
   for(int i = 0; i < n; i++) {
 
-    t = AT*i;
+    t = AT*i; //time for each point from t=0
 
     // /* JMT */
     // cout << "----------JMT----------" << endl;
@@ -129,13 +129,14 @@ void Planner::estimate_new_points(Map& map, vector<vector<double>>& trajectory){
     next_s = 0.0;
     next_d = 0.0;
     for (int a = 0; a < poly_s.size(); a++) {
-      next_s += poly_s[a] * pow(t, a);
-      next_d += poly_d[a] * pow(t, a);
+      next_s += poly_s[a] * pow(t, a); //completes the polynomial aprox by using both coefficients of ...
+      next_d += poly_d[a] * pow(t, a); //JMT and the time of each point for getting a smooth path
     }
-    mod_s = fmod(next_s, TRACK_DISTANCE);
-    mod_d = fmod(next_d, ROAD_WIDTH);
+    mod_s = fmod(next_s, TRACK_DISTANCE); //gives me a value between 0 and the track distance
+    mod_d = fmod(next_d, ROAD_WIDTH); //gives me a value between 0 and the road width
 
-    XY = map.getXY(mod_s, mod_d);
+    XY = map.getXY(mod_s, mod_d); //gives me the values in cartesian coordinates \
+                                    equivalent to the input frenet coordinates
 
     trajectory[0].push_back(XY[0]);
     trajectory[1].push_back(XY[1]);
@@ -151,7 +152,8 @@ void Planner::create_trajectory(Map& map, Road& road, Vehicle& car, vector<vecto
   int current_points = trajectory[0].size();
   this->new_points = false;
 
-  if (current_points < POINTS) {
+  if (current_points < POINTS) { //update new points around every 50 points left which in practice means\
+                                  that it updates every second 50*0.02=1seg 
     this->new_points = true;
 
     // first trajectory
@@ -166,7 +168,9 @@ void Planner::create_trajectory(Map& map, Road& road, Vehicle& car, vector<vecto
         this->stay_in_lane(car);
       // LANE CHANGE NEEDED
       } else {
-        LANE target_lane = road.lane_change_available(car);
+        LANE target_lane = road.lane_change_available(car); //throws best target lane possible in the\
+                                                              current lane giving first priority to the\
+                                                               left lane and then to the right.
         if (target_lane == car.lane()){
           // not possible -> reduce speed
           this->reduce_speed(car);
@@ -187,7 +191,8 @@ void Planner::create_trajectory(Map& map, Road& road, Vehicle& car, vector<vecto
 
   // have we generated new points?
   if (this->new_points) {
-    this->estimate_new_points(map, trajectory);
+    this->estimate_new_points(map, trajectory); //estimates new points based on this->start_s,\
+                                                   this->end_s, this->start_d,this->end_d  
   }
 
 }
@@ -223,14 +228,14 @@ void Planner::apply_action(Vehicle& car, LANE current_lane, LANE target_lane){
 void Planner::start_car(Vehicle& car){
   cout << "ACTION: start_car" << endl;
   this->n = 4*POINTS; // 4 cycles to start
-  double target_v = SPEED_LIMIT*0.5;
-  double target_s = car.get_s() + n * AT * target_v;;
+  double target_v = SPEED_LIMIT*0.5; //desired velocity in m/s
+  double target_s = car.get_s() + n * AT * target_v; // desired position in frenet coordinates
 
-  this->start_s = {car.get_s(), car.get_v(), 0.0};
-  this->end_s= {target_s, target_v, 0.0};
+  this->start_s = {car.get_s(), car.get_v(), 0.0}; //vector with current position and velocity 
+  this->end_s= {target_s, target_v, 0.0}; //vector with desired position and velocity
 
-  this->start_d = {get_lane_d(car.lane()), 0.0, 0.0};
-  this->end_d = {get_lane_d(car.lane()), 0.0, 0.0};
+  this->start_d = {get_lane_d(car.lane()), 0.0, 0.0}; //vector with current lane
+  this->end_d = {get_lane_d(car.lane()), 0.0, 0.0}; //vector with desired lane
 
   this->apply_action(car, car.lane(), car.lane());
 }
