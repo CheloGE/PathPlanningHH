@@ -157,7 +157,7 @@ h.onMessage([
 			******DRIVE*******
 			*****************/
 			vector<vector<double>> trajectory = {next_x_vals, next_y_vals};
-			planner.create_trajectory(map, road, car, trajectory); //what does create_trajectory for \
+			planner.create_trajectoryHH(map, road, car, trajectory); //what does create_trajectory for \
 																															the 2nd iteration do?
 								
 			// Update next point

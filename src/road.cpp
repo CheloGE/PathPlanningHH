@@ -20,6 +20,28 @@ vector<Vehicle> Road::get_lane_status(LANE lane){
   return rlane;
 }
 
+Vehicle Road::get_radar_lane_status(Vehicle& car, LANE lane){
+  vector<Vehicle> currlane= this->get_lane_status(lane);
+  double min=10000;
+  Vehicle stat(1,10000,10000,10000,10000,10000);
+  
+  for (int i = 0; i < currlane.size(); i++) {
+    double distance = currlane[i].get_s() - car.get_s();
+    if (distance<min && distance>0 && distance<RADAR_DISTANCE){
+      min=distance;
+      double x=currlane[i].get_x();
+      double y=currlane[i].get_y();
+      double v=currlane[i].get_v();
+      double s=currlane[i].get_s();
+      double d=currlane[i].get_d();
+      double yaw=currlane[i].get_yaw();
+      stat.update_vehicle_values(x,y,v,s,d,yaw);
+    } 
+  }
+
+  return stat;
+}
+
 bool Road::safe_lane(Vehicle& car, LANE lane){
   vector<Vehicle> r_car_lane = this->get_lane_status(lane);
   bool safe = true;

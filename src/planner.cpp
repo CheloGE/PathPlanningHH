@@ -227,8 +227,8 @@ void Planner::apply_action(Vehicle& car, LANE current_lane, LANE target_lane){
 /* ACTIONS */
 void Planner::start_car(Vehicle& car){
   cout << "ACTION: start_car" << endl;
-  this->n = 4*POINTS; // 4 cycles to start
-  double target_v = SPEED_LIMIT*0.5; //desired velocity in m/s
+  this->n = CYCLES*POINTS; // 4 cycles to start
+  double target_v = SPEED_LIMIT;//SPEED_LIMIT*0.5; //desired velocity in m/s
   double target_s = car.get_s() + n * AT * target_v; // desired position in frenet coordinates
 
   this->start_s = {car.get_s(), car.get_v(), 0.0}; //vector with current position and velocity 
@@ -292,3 +292,40 @@ void Planner::change_lane(Vehicle& car, LANE target_lane){
 
   this->apply_action(car, get_lane(car.prev_d()[0]), get_lane(target_d));
 }
+
+void Planner::create_trajectoryHH(Map& map, Road& road, Vehicle& car, vector<vector<double>>& trajectory){
+  
+  cout << "STATE: " << sstate(this->state) << endl;
+  cout << "LANE: " << slane(car.lane()) << endl;
+  cout << "counter" << this->counter1 << endl;
+
+  int current_points = trajectory[0].size();
+  this->new_points = false;
+
+  if (current_points < POINTS) { //update new points around every 50 points left which in practice means\
+                                  that it updates every second 50*0.02=1seg 
+    this->new_points = true;
+    
+    if (this->state == STATE::START) {
+      this->start_car(car);
+      this->counter1=0; //just in case I need it later
+    }
+    else{
+    
+    //this->change_lane(car, LANE::LEFT); //changes to the left line
+    //this->change_lane(car, LANE::RIGHT); //changes to the right line
+    this->change_lane(car, LANE::CENTER); //changes to the center line
+    
+    }
+  }
+  cout << "Lane Status " << road.get_radar_lane_status(car,LANE::CENTER).get_s()-car.get_s() << endl;
+  
+  
+  // have we generated new points?
+  if (this->new_points) {
+    this->estimate_new_points(map, trajectory); //estimates new points based on this->start_s,\
+                                                   this->end_s, this->start_d,this->end_d  
+  }
+
+}
+  

@@ -40,6 +40,10 @@ double Vehicle::get_d(){
   return this->d;
 }
 
+double Vehicle::get_yaw(){
+  return this->yaw;
+}
+
 LANE Vehicle::lane(){
   LANE lane;
   if (this->d < 4.0) {

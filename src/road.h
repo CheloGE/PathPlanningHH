@@ -22,6 +22,7 @@ class Road {
 
     void update_road(vector<Vehicle> left_lane, vector<Vehicle> center_lane, vector<Vehicle> right_lane);
     vector<Vehicle> get_lane_status(LANE lane);
+    Vehicle get_radar_lane_status(Vehicle& car, LANE lane);
 
     bool safe_lane(Vehicle& car, LANE lane);
     bool free_lane(Vehicle& car, LANE lane);

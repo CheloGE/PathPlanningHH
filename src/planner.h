@@ -16,7 +16,7 @@ class Planner {
 
 protected:
 
-  int n;
+  int n,counter1;
   STATE state;
   vector<double> start_s;
   vector<double> end_s;
@@ -31,6 +31,8 @@ public:
   vector<double> JMT(vector<double> start, vector <double> end, double T);
   void estimate_new_points(Map& map, vector<vector<double>>& trajectory);
   void create_trajectory(Map& map, Road& road, Vehicle& car, vector<vector<double>>& trajectory);
+  void create_trajectoryHH(Map& map, Road& road, Vehicle& car, vector<vector<double>>& trajectory);
+    
 
   void set_state(LANE current_lane, LANE target_lane);
 
