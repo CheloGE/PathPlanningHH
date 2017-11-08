@@ -42,6 +42,12 @@ Vehicle Road::get_radar_lane_status(Vehicle& car, LANE lane){
   return stat;
 }
 
+double Road::get_distance_to_next_vehicle_in_lane(Vehicle& car, LANE lane){
+  Vehicle nextCar=this->get_radar_lane_status(car,lane);
+  double dist=nextCar.get_s()-car.get_s();
+  return dist;
+}
+
 bool Road::safe_lane(Vehicle& car, LANE lane){
   vector<Vehicle> r_car_lane = this->get_lane_status(lane);
   bool safe = true;

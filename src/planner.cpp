@@ -109,7 +109,7 @@ vector<double> Planner::JMT(vector<double> start, vector <double> end, double T)
   return {start[0], start[1], .5*start[2], C.data()[0], C.data()[1], C.data()[2]};
 }
 
-void Planner::estimate_new_points(Map& map, vector<vector<double>>& trajectory){
+void Planner::estimate_new_points(Map& map, vector<vector<double> >& trajectory){
 
   // jmt
   double T = this->n * AT;
@@ -144,7 +144,7 @@ void Planner::estimate_new_points(Map& map, vector<vector<double>>& trajectory){
 
 }
 
-void Planner::create_trajectory(Map& map, Road& road, Vehicle& car, vector<vector<double>>& trajectory) {
+void Planner::create_trajectory(Map& map, Road& road, Vehicle& car, vector<vector<double> >& trajectory) {
 
   cout << "STATE: " << sstate(this->state) << endl;
   cout << "LANE: " << slane(car.lane()) << endl;
@@ -160,9 +160,10 @@ void Planner::create_trajectory(Map& map, Road& road, Vehicle& car, vector<vecto
     if (this->state == STATE::START) {
 
       this->start_car(car);
-
+      this->start_car_instances();
     } else if (this->state == STATE::KEEP_LANE) {
-
+      this->car_instances_data(road,car); //create instances for car
+      
       // FREE LANE
       if (road.safe_lane(car, car.lane())) {
         this->stay_in_lane(car);
@@ -179,6 +180,8 @@ void Planner::create_trajectory(Map& map, Road& road, Vehicle& car, vector<vecto
         }
       }
     } else {
+      this->car_instances_data(road,car); //create instances for car
+      
       LANE new_lane = get_lane(car.prev_d()[0]);
       if(road.safe_lane(car, new_lane)){
         this->stay_in_lane(car);
@@ -298,6 +301,14 @@ void Planner::create_trajectoryHH(Map& map, Road& road, Vehicle& car, vector<vec
   cout << "STATE: " << sstate(this->state) << endl;
   cout << "LANE: " << slane(car.lane()) << endl;
   cout << "counter" << this->counter1 << endl;
+  cout << "distance next car in left" << road.get_distance_to_next_vehicle_in_lane(car,LANE::LEFT) << endl;
+  cout << "distance next car in center" << road.get_distance_to_next_vehicle_in_lane(car,LANE::CENTER) << endl;
+  cout << "distance next car in right" << road.get_distance_to_next_vehicle_in_lane(car,LANE::RIGHT) << endl;
+  cout << "vel next car in left" << road.get_radar_lane_status(car,LANE::LEFT).get_v() << endl;
+  cout << "vel next car in center" << road.get_radar_lane_status(car,LANE::CENTER).get_v() << endl;
+  cout << "vel next car in right" << road.get_radar_lane_status(car,LANE::RIGHT).get_v() << endl;
+
+  
 
   int current_points = trajectory[0].size();
   this->new_points = false;
@@ -309,16 +320,19 @@ void Planner::create_trajectoryHH(Map& map, Road& road, Vehicle& car, vector<vec
     if (this->state == STATE::START) {
       this->start_car(car);
       this->counter1=0; //just in case I need it later
+      this->start_car_instances(); //creates the header for the instances txt
+
     }
     else{
     
     //this->change_lane(car, LANE::LEFT); //changes to the left line
     //this->change_lane(car, LANE::RIGHT); //changes to the right line
     this->change_lane(car, LANE::CENTER); //changes to the center line
+    this->car_instances_data(road,car); //create instances for car
+    
     
     }
   }
-  cout << "Lane Status " << road.get_radar_lane_status(car,LANE::CENTER).get_s()-car.get_s() << endl;
   
   
   // have we generated new points?
@@ -328,4 +342,32 @@ void Planner::create_trajectoryHH(Map& map, Road& road, Vehicle& car, vector<vec
   }
 
 }
+
+void Planner::start_car_instances(){
+  car_instances.open("car_instances.txt",ios::trunc);
+  if (car_instances.is_open()){
+    car_instances <<"distL "<<"VL "<<"distC "<<"VC "<<"distR "<<"VR"<<endl;
+    car_instances.close();
+  }
+  else{
+    cout << "car_instances.txt couldn't be initialized" <<endl;
+  }
+}
+
+void Planner::car_instances_data(Road& road, Vehicle& car){
+  car_instances.open("car_instances.txt",ios::app);
+  if (car_instances.is_open()){
+    car_instances << road.get_distance_to_next_vehicle_in_lane(car,LANE::LEFT)\
+    <<" "<< road.get_radar_lane_status(car,LANE::LEFT).get_v()\
+    <<" "<< road.get_distance_to_next_vehicle_in_lane(car,LANE::CENTER)\
+    <<" "<< road.get_radar_lane_status(car,LANE::CENTER).get_v()\
+    <<" "<< road.get_distance_to_next_vehicle_in_lane(car,LANE::RIGHT)\
+    <<" "<< road.get_radar_lane_status(car,LANE::RIGHT).get_v()<<endl;
+    car_instances.close();
+  }
+  else{
+    cout << "car_instances.txt couldn't be opened" <<endl;
+  }
+}  
+
   
