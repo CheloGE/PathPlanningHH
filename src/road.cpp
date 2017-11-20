@@ -20,7 +20,7 @@ vector<Vehicle> Road::get_lane_status(LANE lane){
   return rlane;
 }
 
-Vehicle Road::get_radar_lane_status(Vehicle& car, LANE lane){
+Vehicle Road::get_radar_lane_status_front(Vehicle& car, LANE lane){
   vector<Vehicle> currlane= this->get_lane_status(lane);
   double min=10000;
   Vehicle stat(1,10000,10000,10000,10000,10000);
@@ -42,9 +42,41 @@ Vehicle Road::get_radar_lane_status(Vehicle& car, LANE lane){
   return stat;
 }
 
+Vehicle Road::get_radar_lane_status_rear(Vehicle& car, LANE lane){
+  vector<Vehicle> currlane= this->get_lane_status(lane);
+  double max=-10000;
+  Vehicle stat(1,10000,10000,10000,10000,10000);
+  
+  for (int i = 0; i < currlane.size(); i++) {
+    double distance = currlane[i].get_s() - car.get_s();
+    if (distance>max && distance<0 && distance>(-2*GUARD_DISTANCE)){
+      max=distance;
+      double x=currlane[i].get_x();
+      double y=currlane[i].get_y();
+      double v=currlane[i].get_v();
+      double s=currlane[i].get_s();
+      double d=currlane[i].get_d();
+      double yaw=currlane[i].get_yaw();
+      stat.update_vehicle_values(x,y,v,s,d,yaw);
+    } 
+  }
+
+  return stat;
+}
+
 double Road::get_distance_to_next_vehicle_in_lane(Vehicle& car, LANE lane){
-  Vehicle nextCar=this->get_radar_lane_status(car,lane);
+  Vehicle nextCar=this->get_radar_lane_status_front(car,lane);
   double dist=nextCar.get_s()-car.get_s();
+  if (dist>RADAR_DISTANCE)
+    dist=10000;
+  return dist;
+}
+
+double Road::get_distance_to_the_rear_vehicle_in_lane(Vehicle& car, LANE lane){
+  Vehicle rearCar=this->get_radar_lane_status_rear(car,lane);
+  double dist=abs(rearCar.get_s()-car.get_s());
+  if (dist>RADAR_DISTANCE)
+    dist=10000;
   return dist;
 }
 

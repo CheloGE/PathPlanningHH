@@ -302,11 +302,14 @@ void Planner::create_trajectoryHH(Map& map, Road& road, Vehicle& car, vector<vec
   cout << "LANE: " << slane(car.lane()) << endl;
   cout << "counter" << this->counter1 << endl;
   cout << "distance next car in left" << road.get_distance_to_next_vehicle_in_lane(car,LANE::LEFT) << endl;
+  cout << "distance rear car in left" << road.get_distance_to_the_rear_vehicle_in_lane(car,LANE::LEFT) << endl;
   cout << "distance next car in center" << road.get_distance_to_next_vehicle_in_lane(car,LANE::CENTER) << endl;
+  cout << "distance rear car in center" << road.get_distance_to_the_rear_vehicle_in_lane(car,LANE::CENTER) << endl;  
   cout << "distance next car in right" << road.get_distance_to_next_vehicle_in_lane(car,LANE::RIGHT) << endl;
-  cout << "vel next car in left" << road.get_radar_lane_status(car,LANE::LEFT).get_v() << endl;
-  cout << "vel next car in center" << road.get_radar_lane_status(car,LANE::CENTER).get_v() << endl;
-  cout << "vel next car in right" << road.get_radar_lane_status(car,LANE::RIGHT).get_v() << endl;
+  cout << "distance rear car in right" << road.get_distance_to_the_rear_vehicle_in_lane(car,LANE::RIGHT) << endl;
+  cout << "vel next car in left" << road.get_radar_lane_status_front(car,LANE::LEFT).get_v() << endl;
+  cout << "vel next car in center" << road.get_radar_lane_status_front(car,LANE::CENTER).get_v() << endl;
+  cout << "vel next car in right" << road.get_radar_lane_status_front(car,LANE::RIGHT).get_v() << endl;
 
   
 
@@ -346,7 +349,10 @@ void Planner::create_trajectoryHH(Map& map, Road& road, Vehicle& car, vector<vec
 void Planner::start_car_instances(){
   car_instances.open("car_instances.txt",ios::trunc);
   if (car_instances.is_open()){
-    car_instances <<"distL "<<"VL "<<"distC "<<"VC "<<"distR "<<"VR"<<endl;
+    car_instances <<"distFront_L "<< "distRear_L "<<"VFront_L "<<"VRear_L " \
+    <<"distFront_C "<<"distRear_C "<<"VFront_C "<<"VRear_C "\
+    <<"distFront_R "<<"distRear_R "<<"VFront_R "<<"VRear_R "\
+    <<"H1 "<<"H2 "<<"H3 "<<endl;
     car_instances.close();
   }
   else{
@@ -358,11 +364,17 @@ void Planner::car_instances_data(Road& road, Vehicle& car){
   car_instances.open("car_instances.txt",ios::app);
   if (car_instances.is_open()){
     car_instances << road.get_distance_to_next_vehicle_in_lane(car,LANE::LEFT)\
-    <<" "<< road.get_radar_lane_status(car,LANE::LEFT).get_v()\
+    <<" "<< road.get_distance_to_the_rear_vehicle_in_lane(car,LANE::LEFT)\
+    <<" "<< road.get_radar_lane_status_front(car,LANE::LEFT).get_v()\
+    <<" "<< road.get_radar_lane_status_rear(car,LANE::LEFT).get_v()\
     <<" "<< road.get_distance_to_next_vehicle_in_lane(car,LANE::CENTER)\
-    <<" "<< road.get_radar_lane_status(car,LANE::CENTER).get_v()\
+    <<" "<< road.get_distance_to_the_rear_vehicle_in_lane(car,LANE::CENTER)
+    <<" "<< road.get_radar_lane_status_front(car,LANE::CENTER).get_v()\
+    <<" "<< road.get_radar_lane_status_rear(car,LANE::CENTER).get_v()\
     <<" "<< road.get_distance_to_next_vehicle_in_lane(car,LANE::RIGHT)\
-    <<" "<< road.get_radar_lane_status(car,LANE::RIGHT).get_v()<<endl;
+    <<" "<< road.get_distance_to_the_rear_vehicle_in_lane(car,LANE::RIGHT)\
+    <<" "<< road.get_radar_lane_status_front(car,LANE::RIGHT).get_v()\
+    <<" "<< road.get_radar_lane_status_rear(car,LANE::RIGHT).get_v()<<endl;
     car_instances.close();
   }
   else{
