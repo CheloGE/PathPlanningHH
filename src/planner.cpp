@@ -91,7 +91,7 @@ vector<double> Planner::JMT(vector<double> start, vector <double> end, double T)
   s(t) = a_0 + a_1 * t + a_2 * t**2 + a_3 * t**3 + a_4 * t**4 + a_5 * t**5
   */
 
-  // prepare matrix A with coefficents
+  // prepare matrix A,B with coefficents
   Eigen::MatrixXd A(3,3);
   Eigen::MatrixXd B(3,1);
 
@@ -112,7 +112,9 @@ vector<double> Planner::JMT(vector<double> start, vector <double> end, double T)
 void Planner::estimate_new_points(Map& map, vector<vector<double> >& trajectory){
 
   // jmt
-  double T = this->n * AT;
+  double T = this->n * AT; /*The duration, in seconds, over which this maneuver should occur
+                            (n=CYCLES*POINTS)*/
+  double acceleration = (this->end_s[1]-this->start_s[1])/T; 
   vector<double> poly_s = this->JMT(this->start_s, this->end_s, T);
   vector<double> poly_d = this->JMT(this->start_d, this->end_d, T);
 
@@ -129,7 +131,7 @@ void Planner::estimate_new_points(Map& map, vector<vector<double> >& trajectory)
     next_s = 0.0;
     next_d = 0.0;
     for (int a = 0; a < poly_s.size(); a++) {
-      next_s += poly_s[a] * pow(t, a); //completes the polynomial aprox by using both coefficients of ...
+      next_s += poly_s[a] * pow(t, a); //completes the polynomial aprox by using both coefficients of 
       next_d += poly_d[a] * pow(t, a); //JMT and the time of each point for getting a smooth path
     }
     mod_s = fmod(next_s, TRACK_DISTANCE); //gives me a value between 0 and the track distance
@@ -230,10 +232,9 @@ void Planner::apply_action(Vehicle& car, LANE current_lane, LANE target_lane){
 /* ACTIONS */
 void Planner::start_car(Vehicle& car){
   cout << "ACTION: start_car" << endl;
-  this->n = CYCLES*POINTS; // 4 cycles to start
-  double target_v = SPEED_LIMIT;//SPEED_LIMIT*0.5; //desired velocity in m/s
+  this->n = 4*CYCLES*POINTS; // 4 cycles to start
+  double target_v = 0.8*SPEED_LIMIT;//SPEED_LIMIT*0.5; //desired velocity in m/s
   double target_s = car.get_s() + n * AT * target_v; // desired position in frenet coordinates
-
   this->start_s = {car.get_s(), car.get_v(), 0.0}; //vector with current position and velocity 
   this->end_s= {target_s, target_v, 0.0}; //vector with desired position and velocity
 
