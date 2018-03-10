@@ -176,7 +176,7 @@ void Planner::create_trajectory(Map& map, Road& road, Vehicle& car, vector<vecto
                                                                left lane and then to the right.
         if (target_lane == car.lane()){
           // not possible -> reduce speed
-          this->reduce_speed(car);
+          this->reduce_speed(car,road.get_radar_lane_status_front(car,car.lane()).get_v());
         } else {
           this->change_lane(car, target_lane);
         }
@@ -189,7 +189,7 @@ void Planner::create_trajectory(Map& map, Road& road, Vehicle& car, vector<vecto
         this->stay_in_lane(car);
       } else {
         // not possible -> reduce speed
-        this->reduce_speed(car);
+        this->reduce_speed(car,road.get_radar_lane_status_front(car,car.lane()).get_v());
       }
     }
   }
@@ -261,11 +261,11 @@ void Planner::stay_in_lane(Vehicle& car){
   this->apply_action(car, get_lane(car.prev_d()[0]), get_lane(car.prev_d()[0]));
 }
 
-void Planner::reduce_speed(Vehicle& car){
+void Planner::reduce_speed(Vehicle& car, double Vel_nextCar){
   cout << "ACTION: reduce_speed" << endl;
   this->n = CYCLES*POINTS;
   this->new_points = true;
-  double target_v = max(car.prev_s()[1]*0.8, SPEED_LIMIT/2);
+  double target_v = max(car.prev_s()[1]*0.8, Vel_nextCar);
   double target_s = car.prev_s()[0] + n * AT * target_v;
 
   this->start_s = {car.prev_s()[0], car.prev_s()[1], car.prev_s()[2]};
