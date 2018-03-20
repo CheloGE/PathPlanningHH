@@ -337,37 +337,72 @@ void Planner::create_trajectoryHH(Map& map, Road& road, Vehicle& car, vector<vec
       switch(car.lane()){
         case LANE::LEFT:
           if(road.get_distance_to_next_vehicle_in_lane(car,LANE::CENTER)<=25.233){
-            LANE target_lane = LANE::LEFT;
-            this->change_lane(car, target_lane);
+            target_lane = LANE::LEFT;
+            if (target_lane == car.lane() && !(road.safe_lane(car,target_lane))){
+              // not possible -> reduce speed
+            this->reduce_speed(car,road.get_radar_lane_status_front(car,car.lane()).get_v());
+            }
+            else
+              this->change_lane(car, target_lane);
           }
           else{
             if(road.get_distance_to_the_rear_vehicle_in_lane(car,LANE::CENTER)<=20.317){
-              LANE target_lane = LANE::LEFT;
-              this->change_lane(car, target_lane);
+              target_lane = LANE::LEFT;
+              if (target_lane == car.lane() && !(road.safe_lane(car,target_lane))){
+                // not possible -> reduce speed
+              this->reduce_speed(car,road.get_radar_lane_status_front(car,car.lane()).get_v());
+              }
+              else
+                this->change_lane(car, target_lane);
             }
             else{
               if(road.get_distance_to_next_vehicle_in_lane(car,LANE::CENTER)>5049.851){
-                LANE target_lane = LANE::CENTER;
-                this->change_lane(car, target_lane);
+                target_lane = LANE::CENTER;
+                if (target_lane == car.lane() && !(road.safe_lane(car,target_lane))){
+                  // not possible -> reduce speed
+                this->reduce_speed(car,road.get_radar_lane_status_front(car,car.lane()).get_v());
+                }
+                else
+                  this->change_lane(car, target_lane);
               }
               else{
                 if(road.get_distance_to_next_vehicle_in_lane(car,LANE::LEFT)>59.626){
-                  LANE target_lane = LANE::LEFT;               
-                  this->change_lane(car, target_lane);
+                  target_lane = LANE::LEFT;
+                  if (target_lane == car.lane() && !(road.safe_lane(car,target_lane))){
+                    // not possible -> reduce speed
+                  this->reduce_speed(car,road.get_radar_lane_status_front(car,car.lane()).get_v());
+                  }
+                  else               
+                    this->change_lane(car, target_lane);
                 }
                 else{
                   if(road.get_distance_to_next_vehicle_in_lane(car,LANE::LEFT)<=23.135){
-                    LANE target_lane = LANE::CENTER; 
-                    this->change_lane(car, target_lane);
+                    target_lane = LANE::CENTER; 
+                    if (target_lane == car.lane() && !(road.safe_lane(car,target_lane))){
+                      // not possible -> reduce speed
+                    this->reduce_speed(car,road.get_radar_lane_status_front(car,car.lane()).get_v());
+                    }
+                    else
+                      this->change_lane(car, target_lane);
                   }
                   else{
                     if(road.get_distance_to_next_vehicle_in_lane(car,LANE::RIGHT)<=80.641){
-                      LANE target_lane = LANE::LEFT;                       
-                      this->change_lane(car, target_lane);
+                      target_lane = LANE::LEFT;
+                      if (target_lane == car.lane() && !(road.safe_lane(car,target_lane))){
+                        // not possible -> reduce speed
+                      this->reduce_speed(car,road.get_radar_lane_status_front(car,car.lane()).get_v());
+                      }
+                      else                       
+                        this->change_lane(car, target_lane);
                     }
                     else{
-                      LANE target_lane = LANE::CENTER;   
-                      this->change_lane(car, target_lane);
+                      target_lane = LANE::CENTER; 
+                      if (target_lane == car.lane() && !(road.safe_lane(car,target_lane))){
+                        // not possible -> reduce speed
+                      this->reduce_speed(car,road.get_radar_lane_status_front(car,car.lane()).get_v());
+                      }
+                      else  
+                        this->change_lane(car, target_lane);
                     }
                   }
                 }
@@ -376,14 +411,212 @@ void Planner::create_trajectoryHH(Map& map, Road& road, Vehicle& car, vector<vec
           }
           break;
         case LANE::CENTER:
+          if(road.get_distance_to_next_vehicle_in_lane(car,LANE::CENTER)>39.025){
+            target_lane = LANE::CENTER;   
+            if (target_lane == car.lane() && !(road.safe_lane(car,target_lane))){
+              // not possible -> reduce speed
+            this->reduce_speed(car,road.get_radar_lane_status_front(car,car.lane()).get_v());
+            }
+            else
+              this->change_lane(car, target_lane);
+          }
+          else{
+            if(road.get_distance_to_next_vehicle_in_lane(car,LANE::LEFT)<=57.594){
+              if(road.get_distance_to_next_vehicle_in_lane(car,LANE::RIGHT)<=60.187){
+                target_lane = LANE::CENTER;  
+                if (target_lane == car.lane() && !(road.safe_lane(car,target_lane))){
+                  // not possible -> reduce speed
+                this->reduce_speed(car,road.get_radar_lane_status_front(car,car.lane()).get_v());
+                }
+                else 
+                  this->change_lane(car, target_lane);
+              }
+              else{
+                if(road.get_distance_to_the_rear_vehicle_in_lane(car,LANE::RIGHT)<=19.918){
+                  target_lane = LANE::CENTER; 
+                  if (target_lane == car.lane() && !(road.safe_lane(car,target_lane))){
+                    // not possible -> reduce speed
+                  this->reduce_speed(car,road.get_radar_lane_status_front(car,car.lane()).get_v());
+                  }
+                  else   
+                    this->change_lane(car, target_lane);
+                }
+                else{
+                  if(road.get_distance_to_next_vehicle_in_lane(car,LANE::CENTER)<=24.878){
+                    if(road.get_radar_lane_status_rear(car,LANE::RIGHT).get_v()<=19.981){
+                      target_lane = LANE::RIGHT;
+                      if (target_lane == car.lane() && !(road.safe_lane(car,target_lane))){
+                        // not possible -> reduce speed
+                      this->reduce_speed(car,road.get_radar_lane_status_front(car,car.lane()).get_v());
+                      }
+                      else   
+                        this->change_lane(car, target_lane);
+                    }
+                    else{
+                      target_lane = LANE::CENTER;
+                      if (target_lane == car.lane() && !(road.safe_lane(car,target_lane))){
+                        // not possible -> reduce speed
+                      this->reduce_speed(car,road.get_radar_lane_status_front(car,car.lane()).get_v());
+                      }
+                      else   
+                        this->change_lane(car, target_lane);
+                    }
+                  }
+                  else{
+                    if(road.get_radar_lane_status_front(car,LANE::CENTER).get_v()<=16.169){
+                      target_lane = LANE::RIGHT;
+                      if (target_lane == car.lane() && !(road.safe_lane(car,target_lane))){
+                        // not possible -> reduce speed
+                      this->reduce_speed(car,road.get_radar_lane_status_front(car,car.lane()).get_v());
+                      }   
+                      else
+                        this->change_lane(car, target_lane);
+                    }
+                    else{
+                      target_lane = LANE::CENTER;
+                      if (target_lane == car.lane() && !(road.safe_lane(car,target_lane))){
+                        // not possible -> reduce speed
+                      this->reduce_speed(car,road.get_radar_lane_status_front(car,car.lane()).get_v());
+                      }
+                      else   
+                        this->change_lane(car, target_lane);
+                    }
+                  }
+                }
+              }
+            }
+            else{
+              if(road.get_distance_to_the_rear_vehicle_in_lane(car,LANE::LEFT)<=20.116){
+                target_lane = LANE::CENTER;
+                if (target_lane == car.lane() && !(road.safe_lane(car,target_lane))){
+                  // not possible -> reduce speed
+                this->reduce_speed(car,road.get_radar_lane_status_front(car,car.lane()).get_v());
+                }   
+                else
+                  this->change_lane(car, target_lane);
+              }
+              else{
+                if(road.get_distance_to_next_vehicle_in_lane(car,LANE::CENTER)<=23.05){
+                  target_lane = LANE::LEFT;  
+                  if (target_lane == car.lane() && !(road.safe_lane(car,target_lane))){
+                    // not possible -> reduce speed
+                  this->reduce_speed(car,road.get_radar_lane_status_front(car,car.lane()).get_v());
+                  }
+                  else 
+                    this->change_lane(car, target_lane);
+                }
+                else{
+                  if(road.get_radar_lane_status_front(car,LANE::CENTER).get_v()<=15.982){
+                    target_lane = LANE::LEFT; 
+                    if (target_lane == car.lane() && !(road.safe_lane(car,target_lane))){
+                      // not possible -> reduce speed
+                    this->reduce_speed(car,road.get_radar_lane_status_front(car,car.lane()).get_v());
+                    }
+                    else  
+                      this->change_lane(car, target_lane);
+                  }
+                  else{
+                    target_lane = LANE::CENTER;
+                    if (target_lane == car.lane() && !(road.safe_lane(car,target_lane))){
+                      // not possible -> reduce speed
+                    this->reduce_speed(car,road.get_radar_lane_status_front(car,car.lane()).get_v());
+                    }
+                    else   
+                      this->change_lane(car, target_lane);
+                  }
+                }
+              }
+            }
+          }
           break;
         case LANE::RIGHT:
+          if(road.get_distance_to_next_vehicle_in_lane(car,LANE::CENTER)>99.309){
+            if(road.get_distance_to_the_rear_vehicle_in_lane(car,LANE::CENTER)<=20.201){
+              target_lane = LANE::RIGHT;
+              if (target_lane == car.lane() && !(road.safe_lane(car,target_lane))){
+                // not possible -> reduce speed
+              this->reduce_speed(car,road.get_radar_lane_status_front(car,car.lane()).get_v());
+              }   
+              else
+                this->change_lane(car, target_lane);
+            }
+            else{
+              target_lane = LANE::CENTER;  
+              if (target_lane == car.lane() && !(road.safe_lane(car,target_lane))){
+                // not possible -> reduce speed
+              this->reduce_speed(car,road.get_radar_lane_status_front(car,car.lane()).get_v());
+              }
+              else 
+                this->change_lane(car, target_lane);
+            }
+          }
+          else{
+            if(road.get_distance_to_next_vehicle_in_lane(car,LANE::RIGHT)>58.233){
+              target_lane = LANE::RIGHT; 
+              if (target_lane == car.lane() && !(road.safe_lane(car,target_lane))){
+                // not possible -> reduce speed
+              this->reduce_speed(car,road.get_radar_lane_status_front(car,car.lane()).get_v());
+              }
+              else  
+                this->change_lane(car, target_lane);
+            }
+            else{
+              if(road.get_distance_to_next_vehicle_in_lane(car,LANE::CENTER)<=25.638){
+                target_lane = LANE::RIGHT;
+                if (target_lane == car.lane() && !(road.safe_lane(car,target_lane))){
+                  // not possible -> reduce speed
+                this->reduce_speed(car,road.get_radar_lane_status_front(car,car.lane()).get_v());
+                }
+                else   
+                  this->change_lane(car, target_lane);
+              }
+              else{
+                if(road.get_distance_to_the_rear_vehicle_in_lane(car,LANE::CENTER)<=20.081){
+                  target_lane = LANE::RIGHT;   
+                  if (target_lane == car.lane() && !(road.safe_lane(car,target_lane))){
+                    // not possible -> reduce speed
+                  this->reduce_speed(car,road.get_radar_lane_status_front(car,car.lane()).get_v());
+                  }
+                  else
+                    this->change_lane(car, target_lane);
+                }
+                else{
+                  if(road.get_distance_to_next_vehicle_in_lane(car,LANE::RIGHT)<=27.06){
+                    target_lane = LANE::CENTER; 
+                    if (target_lane == car.lane() && !(road.safe_lane(car,target_lane))){
+                      // not possible -> reduce speed
+                    this->reduce_speed(car,road.get_radar_lane_status_front(car,car.lane()).get_v());
+                    }
+                    else  
+                      this->change_lane(car, target_lane);
+                  }
+                  else{
+                    if(road.get_distance_to_next_vehicle_in_lane(car,LANE::LEFT)<=67.071){
+                      target_lane = LANE::RIGHT;
+                      if (target_lane == car.lane() && !(road.safe_lane(car,target_lane))){
+                        // not possible -> reduce speed
+                      this->reduce_speed(car,road.get_radar_lane_status_front(car,car.lane()).get_v());
+                      }
+                      else   
+                        this->change_lane(car, target_lane);
+                    }
+                    else{
+                      target_lane = LANE::CENTER;
+                      if (target_lane == car.lane() && !(road.safe_lane(car,target_lane))){
+                        // not possible -> reduce speed
+                      this->reduce_speed(car,road.get_radar_lane_status_front(car,car.lane()).get_v());
+                      }
+                      else   
+                        this->change_lane(car, target_lane);
+                    }
+                  }
+                }
+              }
+            }
+          }
           break;
       }
-      if (target_lane == car.lane() && road.safe_lane(car,target_lane)){
-        // not possible -> reduce speed
-        this->reduce_speed(car,road.get_radar_lane_status_front(car,car.lane()).get_v());
-      }
+      
     }
   }
   
