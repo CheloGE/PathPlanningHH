@@ -331,10 +331,59 @@ void Planner::create_trajectoryHH(Map& map, Road& road, Vehicle& car, vector<vec
     
     //this->change_lane(car, LANE::LEFT); //changes to the left line
     //this->change_lane(car, LANE::RIGHT); //changes to the right line
-    this->change_lane(car, LANE::CENTER); //changes to the center line
-    this->car_instances_data(road,car); //create instances for car
-    
-    
+    //this->change_lane(car, LANE::CENTER); //changes to the center line
+    //this->car_instances_data(road,car); //create instances for car
+      LANE target_lane = car.lane();
+      switch(car.lane()){
+        case LANE::LEFT:
+          if(road.get_distance_to_next_vehicle_in_lane(car,LANE::CENTER)<=25.233){
+            LANE target_lane = LANE::LEFT;
+            this->change_lane(car, target_lane);
+          }
+          else{
+            if(road.get_distance_to_the_rear_vehicle_in_lane(car,LANE::CENTER)<=20.317){
+              LANE target_lane = LANE::LEFT;
+              this->change_lane(car, target_lane);
+            }
+            else{
+              if(road.get_distance_to_next_vehicle_in_lane(car,LANE::CENTER)>5049.851){
+                LANE target_lane = LANE::CENTER;
+                this->change_lane(car, target_lane);
+              }
+              else{
+                if(road.get_distance_to_next_vehicle_in_lane(car,LANE::LEFT)>59.626){
+                  LANE target_lane = LANE::LEFT;               
+                  this->change_lane(car, target_lane);
+                }
+                else{
+                  if(road.get_distance_to_next_vehicle_in_lane(car,LANE::LEFT)<=23.135){
+                    LANE target_lane = LANE::CENTER; 
+                    this->change_lane(car, target_lane);
+                  }
+                  else{
+                    if(road.get_distance_to_next_vehicle_in_lane(car,LANE::RIGHT)<=80.641){
+                      LANE target_lane = LANE::LEFT;                       
+                      this->change_lane(car, target_lane);
+                    }
+                    else{
+                      LANE target_lane = LANE::CENTER;   
+                      this->change_lane(car, target_lane);
+                    }
+                  }
+                }
+              }
+            }
+          }
+          break;
+        case LANE::CENTER:
+          break;
+        case LANE::RIGHT:
+          break;
+      }
+      if (target_lane == car.lane() && road.safe_lane(car,target_lane)){
+        // not possible -> reduce speed
+        this->reduce_speed(car,road.get_radar_lane_status_front(car,car.lane()).get_v());
+      }
     }
   }
   

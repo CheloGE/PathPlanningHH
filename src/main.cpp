@@ -157,7 +157,7 @@ h.onMessage([
 			******DRIVE*******
 			*****************/
 			vector<vector<double>> trajectory = {next_x_vals, next_y_vals};
-			planner.create_trajectory(map, road, car, trajectory); 
+			planner.create_trajectoryHH(map, road, car, trajectory); 
 								
 			// Update next point
 			msgJson["next_x"] = trajectory[0];
