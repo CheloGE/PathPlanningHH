@@ -136,7 +136,6 @@ void Planner::estimate_new_points(Map& map, vector<vector<double> >& trajectory)
     }
     mod_s = fmod(next_s, TRACK_DISTANCE); //gives me a value between 0 and the track distance
     mod_d = fmod(next_d, ROAD_WIDTH); //gives me a value between 0 and the road width
-
     XY = map.getXY(mod_s, mod_d); //gives me the values in cartesian coordinates \
                                     equivalent to the input frenet coordinates
 
@@ -232,7 +231,7 @@ void Planner::apply_action(Vehicle& car, LANE current_lane, LANE target_lane){
 /* ACTIONS */
 void Planner::start_car(Vehicle& car){
   cout << "ACTION: start_car" << endl;
-  this->n = 4*CYCLES*POINTS; // 4 cycles to start
+  this->n = 2*CYCLES*POINTS; // 4 cycles to start
   double target_v = 0.8*SPEED_LIMIT;//SPEED_LIMIT*0.5; //desired velocity in m/s
   double target_s = car.get_s() + n * AT * target_v; // desired position in frenet coordinates
   this->start_s = {car.get_s(), car.get_v(), 0.0}; //vector with current position and velocity 
@@ -265,7 +264,8 @@ void Planner::reduce_speed(Vehicle& car, double Vel_nextCar){
   cout << "ACTION: reduce_speed" << endl;
   this->n = CYCLES*POINTS;
   this->new_points = true;
-  double target_v = max(car.prev_s()[1]*0.8, Vel_nextCar);
+  //double target_v = max(car.prev_s()[1]*0.8, Vel_nextCar);
+  double target_v = Vel_nextCar*0.9;
   double target_s = car.prev_s()[0] + n * AT * target_v;
 
   this->start_s = {car.prev_s()[0], car.prev_s()[1], car.prev_s()[2]};
@@ -283,9 +283,11 @@ void Planner::change_lane(Vehicle& car, LANE target_lane){
   cout << "ACTION: reduce_speed" << endl;
   this->n = CYCLES*POINTS;
   this->new_points = true;
-  double target_v = car.prev_s()[1];
+  //double target_v = car.prev_s()[1];
+  double target_v = SPEED_LIMIT;
   double target_s = car.prev_s()[0] + n * AT * target_v;
-
+  
+      
   this->start_s = {car.prev_s()[0], car.prev_s()[1], car.prev_s()[2]};
   this->end_s = {target_s, target_v, 0.0};
 
@@ -302,16 +304,20 @@ void Planner::create_trajectoryHH(Map& map, Road& road, Vehicle& car, vector<vec
   cout << "STATE: " << sstate(this->state) << endl;
   cout << "LANE: " << slane(car.lane()) << endl;
   cout << "counter" << this->counter1 << endl;
-  cout << "distance next car in left" << road.get_distance_to_next_vehicle_in_lane(car,LANE::LEFT) << endl;
-  cout << "distance rear car in left" << road.get_distance_to_the_rear_vehicle_in_lane(car,LANE::LEFT) << endl;
-  cout << "distance next car in center" << road.get_distance_to_next_vehicle_in_lane(car,LANE::CENTER) << endl;
-  cout << "distance rear car in center" << road.get_distance_to_the_rear_vehicle_in_lane(car,LANE::CENTER) << endl;  
-  cout << "distance next car in right" << road.get_distance_to_next_vehicle_in_lane(car,LANE::RIGHT) << endl;
-  cout << "distance rear car in right" << road.get_distance_to_the_rear_vehicle_in_lane(car,LANE::RIGHT) << endl;
-  cout << "vel next car in left" << road.get_radar_lane_status_front(car,LANE::LEFT).get_v() << endl;
-  cout << "vel next car in center" << road.get_radar_lane_status_front(car,LANE::CENTER).get_v() << endl;
-  cout << "vel next car in right" << road.get_radar_lane_status_front(car,LANE::RIGHT).get_v() << endl;
-
+  cout << "distance next car in left: " << road.get_distance_to_next_vehicle_in_lane(car,LANE::LEFT) << endl;
+  cout << "distance rear car in left: " << road.get_distance_to_the_rear_vehicle_in_lane(car,LANE::LEFT) << endl;
+  cout << "distance next car in center: " << road.get_distance_to_next_vehicle_in_lane(car,LANE::CENTER) << endl;
+  cout << "distance rear car in center: " << road.get_distance_to_the_rear_vehicle_in_lane(car,LANE::CENTER) << endl;  
+  cout << "distance next car in right: " << road.get_distance_to_next_vehicle_in_lane(car,LANE::RIGHT) << endl;
+  cout << "distance rear car in right: " << road.get_distance_to_the_rear_vehicle_in_lane(car,LANE::RIGHT) << endl;
+  cout << "vel next car in left: " << road.get_radar_lane_status_front(car,LANE::LEFT).get_v() << endl;
+  cout << "vel rear car in left: " << road.get_radar_lane_status_rear(car,LANE::LEFT).get_v() << endl;
+  cout << "vel next car in center: " << road.get_radar_lane_status_front(car,LANE::CENTER).get_v() << endl;
+  cout << "vel rear car in center: " << road.get_radar_lane_status_rear(car,LANE::CENTER).get_v() << endl;
+  cout << "vel next car in right: " << road.get_radar_lane_status_front(car,LANE::RIGHT).get_v() << endl;
+  cout << "vel rear car in right: " << road.get_radar_lane_status_rear(car,LANE::RIGHT).get_v() << endl;
+  
+  cout << "vel my car: " << car.get_v() << endl;
   
 
   int current_points = trajectory[0].size();
@@ -411,7 +417,7 @@ void Planner::create_trajectoryHH(Map& map, Road& road, Vehicle& car, vector<vec
           }
           break;
         case LANE::CENTER:
-          if(road.get_distance_to_next_vehicle_in_lane(car,LANE::CENTER)>39.025){
+          if(road.get_distance_to_next_vehicle_in_lane(car,LANE::CENTER)>24){
             target_lane = LANE::CENTER;   
             if (target_lane == car.lane() && !(road.safe_lane(car,target_lane))){
               // not possible -> reduce speed

@@ -45,7 +45,7 @@ Vehicle Road::get_radar_lane_status_front(Vehicle& car, LANE lane){
 Vehicle Road::get_radar_lane_status_rear(Vehicle& car, LANE lane){
   vector<Vehicle> currlane= this->get_lane_status(lane);
   double max=-10000;
-  Vehicle stat(1,10000,10000,10000,10000,10000);
+  Vehicle stat(1,10000,10000,0,10000,10000);
   
   for (int i = 0; i < currlane.size(); i++) {
     double distance = currlane[i].get_s() - car.get_s();
